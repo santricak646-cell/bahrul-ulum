@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bahrul Ulum - FIX TAB</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+  body{background:#F8F9FA;max-width:480px;margin:0 auto;color:#3C4043;padding-bottom:90px}
+  .topbar{display:flex;align-items:center;gap:12px;padding:12px 16px;position:sticky;top:0;background:#fff;z-index:20;border-bottom:1px solid #eee}
+  .topbar .menu{font-size:22px;cursor:pointer;padding:6px}
+  .topbar h1{font-size:20px;font-weight:400;flex:1}
+  .topbar h1 b{color:#0E3B2E}
+  .avatar-top{width:38px;height:38px;border-radius:50%;background:#0E3B2E;overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px solid #C9A86A;color:#C9A86A;font-weight:800;font-size:13px}
+  .avatar-top img{width:100%;height:100%;object-fit:cover}
+  .drawer{position:fixed;top:0;left:-290px;width:280px;height:100%;background:#fff;z-index:100;transition:.3s;box-shadow:4px 0 20px rgba(0,0,0,.2);padding:16px;overflow-y:auto}
+  .drawer.open{left:0}
+  .drawer h2{font-size:20px;font-weight:400;margin:8px 0 16px}
+  .drawer h2 b{color:#0E3B2E}
+  .drawer a{display:flex;gap:14px;padding:12px 8px;border-radius:10px;font-size:14px;cursor:pointer;align-items:center}
+  .drawer a.on{background:#D3E3FD}
+  .drawer .label{font-size:12px;color:#666;margin:16px 0 6px;font-weight:700}
+  /* OVERLAY DIPERBAIKI - KALO GAK AKTIF, BENER-BENER HILANG */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90;display:none;pointer-events:none}
+  .overlay.show{display:block;pointer-events:auto}
+  .class-card{margin:12px 16px;background:linear-gradient(135deg,#0E3B2E 0%,#1A7A5A 50%,#C9A86A 100%);border-radius:16px;color:#fff;padding:22px;position:relative;overflow:hidden;min-height:160px;box-shadow:0 8px 20px rgba(14,59,46,.25)}
+  .class-card h2{font-size:26px;font-weight:700;line-height:1.2;position:relative}
+  .class-card p{font-size:13px;opacity:.9;margin-top:6px;position:relative}
+  .class-card small{font-size:11px;opacity:.85;display:block;margin-top:16px;position:relative;font-style:italic}
+  .logo-mini{position:absolute;right:14px;bottom:14px;width:64px;height:64px;background:#fff;border-radius:50%;overflow:hidden;border:3px solid #fff;z-index:2;display:flex;align-items:center;justify-content:center;color:#0E3B2E;font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+  .logo-mini img{width:100%;height:100%;object-fit:cover}
+  .stats{display:flex;gap:8px;padding:0 16px}
+  .stat{flex:1;background:#fff;border-radius:14px;padding:12px 6px;text-align:center;border:1px solid #eee}
+  .stat b{font-size:15px;display:block;line-height:1.2}
+  .stat span{font-size:10px;color:#666;display:block;margin-top:4px}
+  .stat.gold{background:#0E3B2E;border-color:#0E3B2E}.stat.gold b{color:#fff}.stat.gold span{color:#C9A86A}
+  .wrap{padding:12px 16px}
+  .card{background:#fff;border:1px solid #E8EAED;border-radius:16px;padding:16px;margin-bottom:12px}
+  .card h3{font-size:14px;margin-bottom:12px;color:#202124}
+  label{font-size:11px;color:#5F6368;font-weight:700;display:block;margin:12px 0 6px;letter-spacing:.5px}
+  input,select{width:100%;padding:13px;border:1.5px solid #DADCE0;border-radius:10px;font-size:14px;outline:none;background:#FBFAF7}
+  .btn{width:100%;padding:13px;background:#0E3B2E;color:#fff;border:none;border-radius:20px;font-weight:700;margin-top:14px;cursor:pointer}
+  .btn-green{background:#188038}
+  .filter{display:flex;gap:8px;margin-bottom:10px}.filter button{flex:1;padding:10px;border:1px solid #DADCE0;background:#fff;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer}.filter button.on{background:#0E3B2E;color:#fff}
+  .filter2{display:flex;gap:8px;margin-bottom:12px}.filter2 button{flex:1;padding:8px;border:1px solid #F0D9A0;background:#FFF9E8;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;color:#0E3B2E}.filter2 button.on{background:#C9A86A;color:#0E3B2E}
+  .item{padding:14px 0;border-bottom:1px solid #eee}.item:last-child{border:none}
+  .item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .item b{font-size:14px}.item small{font-size:12px;color:#5F6368;display:block;margin-top:2px;line-height:1.5}
+  .icon{width:42px;height:42px;border-radius:50%;background:#E8F0FE;color:#0B57D0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+  .icon.ok{background:#CEEAD6;color:#188038}.icon.no{background:#FCE8E6;color:#D93025}.icon.rice{background:#FEF7E0;color:#E37400}
+  .badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}.badge{font-size:11px;padding:8px 12px;border-radius:20px;font-weight:700;border:1px solid #DADCE0;cursor:pointer;background:#fff}.badge.ok{background:#0E3B2E;color:#fff}.badge.ok2{background:#C9A86A;color:#0E3B2E}
+  .del{color:#D93025;background:#FFF0F0;border:none;font-size:11px;cursor:pointer;padding:6px 10px;border-radius:20px;font-weight:700}
+  .empty{text-align:center;color:#999;font-size:13px;padding:20px 0}
+  .footer{text-align:center;font-size:11px;color:#999;padding:12px;line-height:1.6}
+  /* TABS DIPERBAIKI - Z-INDEX PALING TINGGI, PASTI BISA DIPENCET */
+  .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#F0F4F9;display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:200;border-top:1px solid #DADCE0}
+  .tabs button{flex:1;background:none;border:none;font-size:11px;font-weight:500;color:#444746;cursor:pointer;padding:6px;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:20px;pointer-events:auto}
+  .tabs button span{font-size:20px;padding:4px 18px;border-radius:20px;pointer-events:none}
+  .tabs button.on{color:#0B57D0}.tabs button.on span{background:#D3E3FD}
+  .fab{position:fixed;right:16px;bottom:92px;width:56px;height:56px;background:#0E3B2E;border:none;border-radius:16px;font-size:28px;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;z-index:50}
+  .status-lunas{color:#188038;font-weight:700}.status-belum{color:#D93025;font-weight:700}
+  .kg-big{font-size:20px;font-weight:800;color:#E37400}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <h2><b>Bahrul</b> Ulum</h2>
+  <a class="on" data-goto="iuran"><span></span>Beranda - Iuran</a>
+  <a data-goto="beras"><span></span> Pemasukan Beras/Orang</a>
+  <a data-goto="santri"><span></span> Data Setiap Santri</a>
+  <div class="label">TERDAFTAR</div>
+  <a class="on"><span style="width:28px;height:28px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#0E3B2E"><img src="https://scontent.cdninstagram.com/v/t51.2885-19/272465621_1126044491561404_1018739250369941687_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=105&ig_cache_key=GNV_PRC8ueupIQAEALdQDGHzSSMObkULAAAB1501500j-ccb7-5&ccb=7-5&_nc_sid=669407&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43MjAuQzMifQ%3D%3D&_nc_ohc=WllLIWQbbIMQ7kNvwE_P8Vw&_nc_oc=AdqdJN6ZVXpPL-Oko7seUmp82Q6Q-6iPH7PS7yact_hhYMjKAilQwwaWujOVQrgTiYBOnEZ9y1aNp5_T3QOJg-y3&_nc_ad=z-m&_nc_cid=0&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_ct=RQosPBUCFQIAAAA&oh=00_AQSWeNxvotyHKwhTRgQepmW4FqDSwPTq_sTMJEQGEiFl1Q&oe=6B0B6322" onerror="this.style.display='none';this.parentNode.innerHTML='BU';this.parentNode.style.color='#C9A86A';this.parentNode.style.fontSize='11px';this.parentNode.style.fontWeight='800'" style="width:100%;height:100%;object-fit:cover"></span> Bahrul Ulum - Iuran Santri</a>
+  <div style="margin-top:20px;font-size:11px;color:#999;line-height:1.6">This Application Was Made By<br><b style="color:#333">Ahmad Jaelani</b><br>© Bahrul Ulum</div>
+</div>
+
+<div class="topbar">
+  <span class="menu" id="btnMenu">☰</span>
+  <h1><b>Bahrul</b> Ulum</h1>
+  <div class="avatar-top"><img src="https://scontent.cdninstagram.com/v/t51.2885-19/272465621_1126044491561404_1018739250369941687_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=105&ig_cache_key=GNV_PRC8ueupIQAEALdQDGHzSSMObkULAAAB1501500j-ccb7-5&ccb=7-5&_nc_sid=669407&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43MjAuQzMifQ%3D%3D&_nc_ohc=WllLIWQbbIMQ7kNvwE_P8Vw&_nc_oc=AdqdJN6ZVXpPL-Oko7seUmp82Q6Q-6iPH7PS7yact_hhYMjKAilQwwaWujOVQrgTiYBOnEZ9y1aNp5_T3QOJg-y3&_nc_ad=z-m&_nc_cid=0&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_ct=RQosPBUCFQIAAAA&oh=00_AQSWeNxvotyHKwhTRgQepmW4FqDSwPTq_sTMJEQGEiFl1Q&oe=6B0B6322" onerror="this.style.display='none';this.parentNode.innerHTML='BU'" alt="Logo"></div>
+</div>
+
+<div class="class-card">
+  <h2 id="judulKelas">Bahrul Ulum<br>Iuran Santri</h2>
+  <p> Tangsi Mekar • Bandung</p>
+  <small>This Application Was Made By Ahmad Jaelani</small>
+  <div class="logo-mini"><img src="https://scontent.cdninstagram.com/v/t51.2885-19/272465621_1126044491561404_1018739250369941687_n.jpg?stp=dst-jpg_s150x150_tt6&_nc_cat=105&ig_cache_key=GNV_PRC8ueupIQAEALdQDGHzSSMObkULAAAB1501500j-ccb7-5&ccb=7-5&_nc_sid=669407&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLnd3dy43MjAuQzMifQ%3D%3D&_nc_ohc=WllLIWQbbIMQ7kNvwE_P8Vw&_nc_oc=AdqdJN6ZVXpPL-Oko7seUmp82Q6Q-6iPH7PS7yact_hhYMjKAilQwwaWujOVQrgTiYBOnEZ9y1aNp5_T3QOJg-y3&_nc_ad=z-m&_nc_cid=0&_nc_zt=24&_nc_ht=scontent.cdninstagram.com&_nc_ct=RQosPBUCFQIAAAA&oh=00_AQSWeNxvotyHKwhTRgQepmW4FqDSwPTq_sTMJEQGEiFl1Q&oe=6B0B6322" onerror="this.style.display='none';this.parentNode.innerHTML='BU'" alt="Logo"></div>
+</div>
+
+<!-- TAB 1 IURAN -->
+<div id="pageIuran">
+  <div class="stats">
+    <div class="stat"><b id="tTotal">0</b><span>Total Santri</span></div>
+    <div class="stat"><b id="tMinggu">0</b><span>Lunas Minggu Ini</span></div>
+    <div class="stat gold"><b id="tBulan">0</b><span>Lunas Bulan Ini</span></div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <h3> Tambah Santri Baru</h3>
+      <label>NAMA SANTRI</label><input id="nama" placeholder="Contoh : ********">
+      <button class="btn" onclick="simpan()">Tambahkan Nama</button>
+    </div>
+    <div class="card">
+      <h3> Daftar Iuran Uang - Rp 35.000</h3>
+      <input id="cari" placeholder="🔍 Cari nama santri..." oninput="tampil()" style="margin-bottom:12px">
+      <div class="filter2"><button id="wSemua" class="on" onclick="setWaktu('semua')"> Semua</button><button id="wMinggu" onclick="setWaktu('minggu')"> Minggu Ini</button><button id="wBulan" onclick="setWaktu('bulan')">Bulan Ini</button></div>
+      <div class="filter"><button id="fSemua" class="on" onclick="setFilter('semua')">Semua</button><button id="fBelum" onclick="setFilter('belum')">Belum Lunas</button><button id="fLunas" onclick="setFilter('lunas')">Lunas</button></div>
+      <div id="list"></div>
+    </div>
+    <div class="card"><h3>📊 Rekap Iuran Uang</h3><p id="rekap" style="font-size:13px;color:#555;line-height:1.7"></p></div>
+  </div>
+</div>
+
+<!-- TAB 2 - PEMASUKAN BERAS Per ORANG -->
+<div id="pageBeras" style="display:none">
+  <div class="stats">
+    <div class="stat"><b id="bTotalKg">0 Kg</b><span>TOTAL BERAS</span></div>
+    <div class="stat"><b id="bUdah">0</b><span>Di Kumpulkan</span></div>
+    <div class="stat gold"><b id="bBelum">0</b><span>Tidak Membawa</span></div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <h3>🌾  Beras/Orang</h3>
+      <label>PILIH SANTRI</label>
+      <select id="berasNama"></select>
+      <label>TOTAL BERAS YANG DI BAWA ?</label>
+      <input id="berasKg" type="number" placeholder="Contoh: 2">
+      <label>TANGGAL PENGUMPULAN</label>
+      <input id="berasTgl" type="date">
+      <button class="btn btn-green" onclick="simpanBeras()"> Simpan  </button>
+    </div>
+    <div class="card">
+      <h3>🌾  Pemasukan Beras/Orang</h3>
+      <input id="cariBeras" placeholder="🔍 Cari nama santri..." oninput="tampilBeras()" style="margin-bottom:12px">
+      <div class="filter"><button id="fbSemua" class="on" onclick="setFilterBeras('semua')">Semua Orang</button><button id="fbUdah" onclick="setFilterBeras('sudah')">Sudah Membawa</button><button id="fbBelum" onclick="setFilterBeras('belum')">Belum Membawa</button></div>
+      <div id="listBeras"></div>
+    </div>
+    <div class="card">
+      <h3>Riwayat Pemasukan Beras/Orang</h3>
+      <div id="riwayatBeras"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 DATA SANTRI -->
+<div id="pageSantri" style="display:none">
+  <div class="stats">
+    <div class="stat"><b id="sTotal">0</b><span>Total Santri</span></div>
+    <div class="stat"><b id="sLunas">0</b><span>Sudah Bayar</span></div>
+    <div class="stat gold"><b id="sBelum">0</b><span>Belum Bayar</span></div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <h3>✅ Status Pembayaran Santri</h3>
+      <input id="cariSantri" placeholder="🔍 Cari nama santri..." oninput="tampilSantri()" style="margin-bottom:12px">
+      <div class="filter"><button id="fsSemua" class="on" onclick="setFilterSantri('semua')">Semua</button><button id="fsLunas" onclick="setFilterSantri('lunas')">Udah Bayar</button><button id="fsBelum" onclick="setFilterSantri('belum')">Belum Bayar</button></div>
+      <div id="listSantri"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">This Application Was Made By Ahmad Jaelani<br>© Bahrul Ulum • All Rights Reserved</div>
+<button class="fab" id="btnFab">+</button>
+
+<!-- TABS BARU - PAKE ID, BUKAN ONCLICK DOANG -->
+<div class="tabs">
+  <button id="tabIuran" class="on" data-tab="iuran"><span>💰</span>Iuran</button>
+  <button id="tabBeras" data-tab="beras"><span>🌾</span>Beras</button>
+  <button id="tabSantri" data-tab="santri"><span>👳</span>Data Santri</button>
+</div>
+
+<script>
+// === FIX UTAMA: PINDAH TAB PAKE CARA BARU, DIJAMIN BISA DIPENCET ===
+function pindah(tab){
+  // Tutup drawer + overlay dulu biar gak nutupin layar
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  // Sembunyikan semua page
+  document.getElementById('pageIuran').style.display = 'none';
+  document.getElementById('pageBeras').style.display = 'none';
+  document.getElementById('pageSantri').style.display = 'none';
+  // Matikan semua tab
+  document.getElementById('tabIuran').classList.remove('on');
+  document.getElementById('tabBeras').classList.remove('on');
+  document.getElementById('tabSantri').classList.remove('on');
+  // Tampilkan yang dipilih
+  if(tab==='iuran'){ document.getElementById('pageIuran').style.display='block'; document.getElementById('tabIuran').classList.add('on'); document.getElementById('judulKelas').innerHTML='Bahrul Ulum<br>Iuran Santri'; }
+  if(tab==='beras'){ document.getElementById('pageBeras').style.display='block'; document.getElementById('tabBeras').classList.add('on'); document.getElementById('judulKelas').innerHTML='Bahrul Ulum<br>Beras Per Orang'; tampilBeras(); }
+  if(tab==='santri'){ document.getElementById('pageSantri').style.display='block'; document.getElementById('tabSantri').classList.add('on'); document.getElementById('judulKelas').innerHTML='Bahrul Ulum<br>Data Santri'; tampilSantri(); }
+  window.scrollTo(0,0);
+}
+// Pasang klik ke semua tombol tab + drawer + menu
+document.getElementById('tabIuran').addEventListener('click', function(){ pindah('iuran'); });
+document.getElementById('tabBeras').addEventListener('click', function(){ pindah('beras'); });
+document.getElementById('tabSantri').addEventListener('click', function(){ pindah('santri'); });
+document.getElementById('btnMenu').addEventListener('click', function(){ document.getElementById('drawer').classList.add('open'); document.getElementById('overlay').classList.add('show'); });
+document.getElementById('overlay').addEventListener('click', function(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); });
+document.querySelectorAll('[data-goto]').forEach(function(el){ el.addEventListener('click', function(){ pindah(el.getAttribute('data-goto')); }); });
+document.getElementById('btnFab').addEventListener('click', function(){ let t=document.querySelector('.tabs button.on').id; if(t==='tabBeras'){document.getElementById('berasKg').focus();} else {document.getElementById('nama').focus();} });
+
+let data = JSON.parse(localStorage.getItem('bahrul_iuran_v3')||'[]');
+let berasData = JSON.parse(localStorage.getItem('bahrul_beras_perorang')||'[]');
+let filter='semua', waktu='semua', filterSantri='semua', filterBeras='semua';
+function setFilter(f){ filter=f; ['fSemua','fBelum','fLunas'].forEach(id=>document.getElementById(id).className=''); document.getElementById(f==='semua'?'fSemua':f==='belum'?'fBelum':'fLunas').className='on'; tampil(); }
+function setWaktu(w){ waktu=w; ['wSemua','wMinggu','wBulan'].forEach(id=>document.getElementById(id).className=''); document.getElementById(w==='semua'?'wSemua':w==='minggu'?'wMinggu':'wBulan').className='on'; tampil(); }
+function setFilterSantri(f){ filterSantri=f; ['fsSemua','fsLunas','fsBelum'].forEach(id=>document.getElementById(id).className=''); document.getElementById(f==='semua'?'fsSemua':f==='lunas'?'fsLunas':'fsBelum').className='on'; tampilSantri(); }
+function setFilterBeras(f){ filterBeras=f; ['fbSemua','fbUdah','fbBelum'].forEach(id=>document.getElementById(id).className=''); document.getElementById(f==='semua'?'fbSemua':f==='udah'?'fbUdah':'fbBelum').className='on'; tampilBeras(); }
+function simpan(){ let nama=document.getElementById('nama').value.trim(); if(!nama){alert('Isi nama dulu bre');return;} data.push({nama:nama, uang:false, beras:false, tglUang:'', tglBeras:''}); localStorage.setItem('bahrul_iuran_v3',JSON.stringify(data)); document.getElementById('nama').value=''; tampil(); tampilSantri(); tampilBeras(); }
+function toggle(i, field){ let now = new Date().toISOString().slice(0,10); if(!data[i][field]){ data[i][field]=true; data[i][field==='uang'?'tglUang':'tglBeras']=now; } else { data[i][field]=false; data[i][field==='uang'?'tglUang':'tglBeras']=''; } localStorage.setItem('bahrul_iuran_v3',JSON.stringify(data)); tampil(); tampilSantri(); tampilBeras(); }
+function hapus(i){ if(confirm('Hapus santri ini? Data beras per orangnya juga kehapus.')){ let nama=data[i].nama; berasData=berasData.filter(b=>b.nama!==nama); localStorage.setItem('bahrul_beras_perorang',JSON.stringify(berasData)); data.splice(i,1); localStorage.setItem('bahrul_iuran_v3',JSON.stringify(data)); tampil(); tampilSantri(); tampilBeras(); }}
+function isMingguIni(tgl){ if(!tgl) return false; let d=new Date(tgl), now=new Date(); let day=now.getDay()||7; let senin=new Date(now); senin.setDate(now.getDate()-day+1); senin.setHours(0,0,0,0); let minggu=new Date(senin); minggu.setDate(senin.getDate()+6); return d>=senin && d<=minggu; }
+function isBulanIni(tgl){ if(!tgl) return false; let d=new Date(tgl), now=new Date(); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); }
+function tampil(){ let q=document.getElementById('cari').value.toLowerCase(); let list=document.getElementById('list'); let mingguLunas=data.filter(s=>isMingguIni(s.tglUang) && isMingguIni(s.tglBeras)).length; let bulanLunas=data.filter(s=>isBulanIni(s.tglUang) && isBulanIni(s.tglBeras)).length; document.getElementById('tTotal').innerText=data.length; document.getElementById('tMinggu').innerText=mingguLunas; document.getElementById('tBulan').innerText=bulanLunas; let f=data.filter(s=>s.nama.toLowerCase().includes(q)); if(waktu==='minggu') f=f.filter(s=>isMingguIni(s.tglUang) || isMingguIni(s.tglBeras)); if(waktu==='bulan') f=f.filter(s=>isBulanIni(s.tglUang) || isBulanIni(s.tglBeras)); if(filter==='lunas') f=f.filter(s=>s.uang && s.beras); if(filter==='belum') f=f.filter(s=>!(s.uang && s.beras)); if(f.length==0){list.innerHTML='<div class="empty">Belum ada data untuk periode ini</div>';} else{ list.innerHTML=''; f.forEach(s=>{ let idx=data.indexOf(s); let inisial=s.nama.split(' ').map(w=>w[0]).join('').slice(0,1).toUpperCase(); list.innerHTML+=`<div class="item"><div class="item-top"><div style="display:flex;gap:10px"><div class="icon">${inisial}</div><div><b>${s.nama}</b><small>${s.tglUang?'Bayar: '+s.tglUang:''} ${s.tglBeras?' • Beras: '+s.tglBeras:''}</small></div></div><button class="del" onclick="hapus(${idx})">Hapus</button></div><div class="badges"><button class="badge ${s.uang?'ok':''}" onclick="toggle(${idx},'uang')">${s.uang?'✓ Rp 35.000 Lunas':'○ Rp 35.000 Belum'}</button><button class="badge ${s.beras?'ok2':''}" onclick="toggle(${idx},'beras')">${s.beras?'✓ Beras Sudah':'○ Beras Belum'}</button></div></div>`; }); } let uangMinggu=data.filter(s=>isMingguIni(s.tglUang)).length; let berasMinggu=data.filter(s=>isMingguIni(s.tglBeras)).length; let uangBulan=data.filter(s=>isBulanIni(s.tglUang)).length; let berasBulan=data.filter(s=>isBulanIni(s.tglBeras)).length; document.getElementById('rekap').innerHTML=`<b>Minggu Ini:</b> ${uangMinggu} santri bayar Rp 35.000 • ${berasMinggu} santri bawa beras<br><b>Bulan Ini:</b> ${uangBulan} santri bayar Rp 35.000 • ${berasBulan} santri bawa beras<br><b>Total Uang Terkumpul Bulan Ini:</b> Rp ${(uangBulan*35000).toLocaleString('id-ID')}`; }
+function simpanBeras(){
+  let nama=document.getElementById('berasNama').value;
+  let kg=parseFloat(document.getElementById('berasKg').value);
+  let tgl=document.getElementById('berasTgl').value || new Date().toISOString().slice(0,10);
+  if(!nama){alert('Pilih santri dulu bre');return;}
+  if(!kg){alert('Isi berapa Kg berasnya orang ini bre');return;}
+  berasData.unshift({nama:nama, kg:kg, tgl:tgl});
+  localStorage.setItem('bahrul_beras_perorang',JSON.stringify(berasData));
+  let idx=data.findIndex(s=>s.nama===nama);
+  if(idx>=0 && !data[idx].beras){ data[idx].beras=true; data[idx].tglBeras=tgl; localStorage.setItem('bahrul_iuran_v3',JSON.stringify(data)); }
+  document.getElementById('berasKg').value='';
+  tampilBeras(); tampil(); tampilSantri();
+  alert('Berhasil! '+nama+' bawa beras '+kg+' Kg!');
+}
+function hapusBeras(i){ if(confirm('Hapus data beras orang ini?')){berasData.splice(i,1); localStorage.setItem('bahrul_beras_perorang',JSON.stringify(berasData)); tampilBeras();} }
+function tampilBeras(){
+  let totalKg=berasData.reduce((a,b)=>a+b.kg,0);
+  let namaUdah=[...new Set(berasData.map(b=>b.nama))];
+  let belum=data.length-namaUdah.length;
+  document.getElementById('bTotalKg').innerText=totalKg+' Kg';
+  document.getElementById('bUdah').innerText=namaUdah.length;
+  document.getElementById('bBelum').innerText=Math.max(0,belum);
+  let sel=document.getElementById('berasNama');
+  sel.innerHTML=data.map(s=>`<option value="${s.nama}">${s.nama}</option>`).join('') || '<option value="">Belum ada santri - tambah dulu di Tab Iuran</option>';
+  if(!document.getElementById('berasTgl').value) document.getElementById('berasTgl').value=new Date().toISOString().slice(0,10);
+  let q=document.getElementById('cariBeras').value.toLowerCase();
+  let list=document.getElementById('listBeras');
+  let f=data.filter(s=>s.nama.toLowerCase().includes(q));
+  if(filterBeras==='udah') f=f.filter(s=>namaUdah.includes(s.nama));
+  if(filterBeras==='belum') f=f.filter(s=>!namaUdah.includes(s.nama));
+  if(f.length==0){list.innerHTML='<div class="empty">Belum ada santri</div>';} else {
+    list.innerHTML='';
+    f.forEach(s=>{
+      let totalS=berasData.filter(b=>b.nama===s.nama).reduce((a,b)=>a+b.kg,0);
+      let udah=namaUdah.includes(s.nama);
+      list.innerHTML+=`<div class="item"><div class="item-top"><div style="display:flex;gap:10px"><div class="icon rice">🌾</div><div><b>${s.nama}</b><small>${udah?'Udah bawa beras':'Belum bawa beras'}<br>${udah?'Total yang dibawa orang ini: '+totalS+' Kg':''}</small></div></div><div style="text-align:right"><div class="kg-big">${udah?totalS+' Kg':'0 Kg'}</div><span style="font-size:11px;color:${udah?'#188038':'#D93025'};font-weight:700">${udah?'✅ UDAH BAWA':'❌ BELUM'}</span></div></div></div>`;
+    });
+  }
+  let riw=document.getElementById('riwayatBeras');
+  if(berasData.length==0){riw.innerHTML='<div class="empty">Belum ada beras masuk</div>';return;}
+  riw.innerHTML='';
+  berasData.slice(0,20).forEach((b,idx)=>{
+    riw.innerHTML+=`<div class="item"><div class="item-top"><div style="display:flex;gap:10px"><div class="icon rice">🌾</div><div><b>${b.nama}</b><small>${b.tgl}</small></div></div><button class="del" onclick="hapusBeras(${idx})">Hapus</button></div><div style="color:#E37400;font-weight:700">+ ${b.kg} Kg Beras - dari ${b.nama}</div></div>`;
+  });
+}
+function tampilSantri(){
+  let q=document.getElementById('cariSantri').value.toLowerCase();
+  let list=document.getElementById('listSantri');
+  let lunas=data.filter(s=>s.uang && s.beras).length;
+  let belum=data.length-lunas;
+  document.getElementById('sTotal').innerText=data.length;
+  document.getElementById('sLunas').innerText=lunas;
+  document.getElementById('sBelum').innerText=belum;
+  let f=data.filter(s=>s.nama.toLowerCase().includes(q));
+  if(filterSantri==='lunas') f=f.filter(s=>s.uang && s.beras);
+  if(filterSantri==='belum') f=f.filter(s=>!(s.uang && s.beras));
+  if(f.length==0){list.innerHTML='<div class="empty">Belum ada santri</div>';return;}
+  list.innerHTML='';
+  f.forEach(s=>{
+    let idx=data.indexOf(s);
+    let totalBeras=berasData.filter(b=>b.nama===s.nama).reduce((a,b)=>a+b.kg,0);
+    let statusUang = s.uang ? '<span class="status-lunas">✅ Uang Lunas</span>' : '<span class="status-belum">❌ Uang Belum</span>';
+    let statusBeras = s.beras ? '<span class="status-lunas">✅ Beras '+totalBeras+' Kg</span>' : '<span class="status-belum">❌ Beras Belum</span>';
+    let totalStatus = (s.uang && s.beras) ? '<span class="status-lunas">✅ LUNAS SEMUA</span>' : '<span class="status-belum">⏳ BELUM LUNAS</span>';
+    list.innerHTML+=`<div class="item"><div class="item-top"><div style="display:flex;gap:10px"><div class="icon ${s.uang&&s.beras?'ok':'no'}">${s.uang&&s.beras?'✓':'!'}</div><div><b>${s.nama}</b><br><small>${statusUang} • ${statusBeras}</small><div style="margin-top:6px;font-size:13px">${totalStatus}</div></div></div><button class="del" onclick="hapus(${idx})">Hapus</button></div></div>`;
+  });
+}
+tampil(); tampilBeras(); tampilSantri();
+</script>
+</body>
+</html>
